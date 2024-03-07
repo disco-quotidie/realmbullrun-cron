@@ -14,7 +14,6 @@ app.use(express.json());
 app.get('/', async (req, res) => {
   res.status(200).send(`+${tlr} Subrealm Indexer API is working on ${process.env.NETWORK}!`);
 });
-app.use('/api', routes);
 
 const tlr = process.env.TOP_LEVEL_REALM
 const scanRealms = require('./scan-realms');

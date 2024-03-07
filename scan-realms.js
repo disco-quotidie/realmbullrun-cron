@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 const scanRealms = (str = '') => {
-  
+  console.log("scanning")
 }
 
 const getDateStr = () => {
