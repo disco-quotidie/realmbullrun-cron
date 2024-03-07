@@ -1,7 +1,6 @@
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
-const httpStatus = require('http-status');
 const routes = require('./route');
 
 const app = express();
@@ -13,20 +12,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/', async (req, res) => {
-  res.status(200).send('Congratulations! Realm Indexer API is working!');
+  res.status(200).send(`+${tlr} Subrealm Indexer API is working on ${process.env.NETWORK}!`);
 });
 app.use('/api', routes);
 
+const tlr = process.env.TOP_LEVEL_REALM
 const scanRealms = require('./scan-realms');
 
 const server = http.createServer(app);
 
-global.realmMap = {}
+global.subrealmMap = {}
 
 server.listen(80, () => {
-  console.log('Realm Indexer started...')
+  console.log(`+${tlr} Subrealm Indexer started on ${process.env.NETWORK}...`)
   scanRealms()
   setInterval(() => {
     scanRealms()
-  }, 100000)
+  }, 300000)
 })
