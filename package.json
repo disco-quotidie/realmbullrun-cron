@@ -2,7 +2,7 @@
   "name": "realmbullrun-cron",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "node index",
     "dev": "nodemon index",
@@ -13,8 +13,10 @@
   "dependencies": {
     "axios": "^1.6.7",
     "body-parse": "^0.1.0",
+    "borc": "^3.0.0",
     "cookie-parse": "^0.4.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.18.2"
   },
   "devDependencies": {
