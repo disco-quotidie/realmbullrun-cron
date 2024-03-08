@@ -20,6 +20,29 @@ app.get('/api/get-subrealms', async (req, res) => {
   res.status(200).json(global.subrealmList)
 })
 
+app.get('/api/get-subrealm-info', async (req, res) => {
+  try {
+    const { subrealm } = req.query
+    const sblist = global.subrealmList.filter(elem => elem.subrealm === subrealm)
+    if (sblist && sblist.length > 0) {
+      res.status(200).json({
+        success: true,
+        data: sblist[0]
+      })
+    }
+    else
+      res.status(200).json({
+        success: false,
+        data: {}
+      })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      data: {}
+    })    
+  }
+})
+
 const scanRealms = require('./scan-realms');
 
 const server = http.createServer(app);
