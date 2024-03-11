@@ -149,7 +149,7 @@ const mergeProfile = async (originalData, updatedData) => {
     if (walletKeys && walletKeys.length > 0) {
       for (let i = 0; i < walletKeys.length; i++) {
         const walletKey = walletKeys[i];
-        const address = wallets[walletKey]
+        const { address } = wallets[walletKey]
         if (address) {
           walletArray.push({
             type: walletKey,
