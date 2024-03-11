@@ -1,4 +1,5 @@
 const getAtomicalInfoFromId = require('./get-atomical-info-from-id')
+const axios = require('axios')
 
 const getImageDataFromUri = async (uri, network) => {
   if (uri.startsWith("atom:btc:id")) {
@@ -39,6 +40,10 @@ const getImageDataFromUri = async (uri, network) => {
         }
       }
     }
+  }
+  else if (uri.startsWith("atom:btc:dat")) {
+    const response = await axios.get(`${process.env.CURRENT_URN_PROXY}/${uri}`)
+    return response.data
   }
   return ""
 }

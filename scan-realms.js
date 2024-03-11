@@ -67,12 +67,6 @@ const extractProfileData = (data) => {
       if (filtered && filtered.length > 0) {
         const { $d, $b } = fields[filtered[0]]
         return $d
-        // console.log($d)
-
-        // const decoded = decodePayloadCBOR(payload)
-
-        // leave the decoding just for a while...
-        // console.log(decoded)
       }
     }
     else {
@@ -81,44 +75,6 @@ const extractProfileData = (data) => {
   }
   return data
 }
-
-// const decodePayloadCBOR = (payload, hexify = true, addUtf8 = false) => {
-//   if (hexify) {
-//     return hexifyObjectWithUtf8(cbor.decode(payload), addUtf8);
-//   } else {
-//     return cbor.decode(payload);
-//   }
-// }
-
-// const hexifyObjectWithUtf8 = (obj, utf8 = true) => {
-//   function isBuffer(obj) {
-//     return Buffer.isBuffer(obj);
-//   }
-
-//   function isObject(obj) {
-//     return typeof obj === 'object' && !Array.isArray(obj) && obj !== null
-//   }
-
-//   const stackOfKeyRefs = [obj]
-//   do {
-//     const nextObjectLayer = stackOfKeyRefs.pop();
-//     for (const key in nextObjectLayer) {
-
-//       if (!nextObjectLayer.hasOwnProperty(key)) {
-//         continue;
-//       }
-//       if (isObject(nextObjectLayer[key]) && !isBuffer(nextObjectLayer[key])) {
-//         stackOfKeyRefs.push(nextObjectLayer[key])
-//       } else if (isBuffer(nextObjectLayer[key])) {
-//         if (utf8) {
-//           nextObjectLayer[key + '-utf8'] = nextObjectLayer[key].toString('utf8')
-//         }
-//         nextObjectLayer[key] = nextObjectLayer[key].toString('hex')
-//       }
-//     }
-//   } while (stackOfKeyRefs.length);
-//   return obj;
-// }
 
 const mergeProfile = async (originalData, updatedData) => {
   if (!updatedData)
@@ -157,7 +113,7 @@ const mergeProfile = async (originalData, updatedData) => {
         originalData['collections'] = {}
       for (let i = 0; i < collectionGroupKeys.length; i++) {
         const collectionGroupKey = collectionGroupKeys[i];
-        const { name, image, desc } = collections[collectionGroupKey]
+        const { name, image, desc, preview } = collections[collectionGroupKey]
         originalData['collections'][collectionGroupKey] = {}
         if (name)
           originalData['collections'][collectionGroupKey]['name'] = name
@@ -165,7 +121,25 @@ const mergeProfile = async (originalData, updatedData) => {
           originalData['collections'][collectionGroupKey]['desc'] = desc
         if (image)
           originalData['collections'][collectionGroupKey]['image'] = await getImageDataFromUri(image, process.env.NETWORK)
-        // still have to add previews        
+        if (preview) {
+          const previewImgs = []
+          const previewKeys = Object.keys(preview)
+          if (previewKeys) {
+            originalData['collections'][collectionGroupKey]['previews'] = []
+            for (let j = 0; j < previewKeys.length; j++) {
+              const previewKey = previewKeys[j];
+              const item = preview[previewKey]
+              if (item) {
+                const { img } = item
+                if (img) {
+                  const imageContent = await getImageDataFromUri(img, process.env.NETWORK)
+                  previewImgs.push(imageContent)
+                }
+              }              
+            }
+            originalData['collections'][collectionGroupKey]['previews'] = previewImgs
+          }
+        }
       }
     }
   }
