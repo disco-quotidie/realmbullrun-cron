@@ -1,6 +1,6 @@
 const getAtomicalInfoFromId = require('./get-atomical-info-from-id')
 const axios = require('axios')
-
+const fs = require('node:fs/promises');
 const getImageDataFromUri = async (uri, network) => {
   if (uri.startsWith("atom:btc:id")) {
     let atomicai_id = uri.split(":")[3]
@@ -42,8 +42,20 @@ const getImageDataFromUri = async (uri, network) => {
     }
   }
   else if (uri.startsWith("atom:btc:dat")) {
-    const response = await axios.get(`${process.env.CURRENT_URN_PROXY}/${uri}`)
-    return response.data
+    return uri
+    // const response = await axios.get(`${process.env.CURRENT_URN_PROXY}/${uri}`)
+    // // console.log(`${process.env.CURRENT_URN_PROXY}/${uri}`)
+    // // const mimeType = "svg"
+    // console.log(response.data)
+    // const bytes = Buffer.from(response.data, 'base64');
+    // console.log(bytes.length)
+    // const base64 = bytes.toString('hex');
+    // // console.log('-------------------------')
+    // // // console.log(response.data)
+    // // console.log(base64.length)
+    // // return `data:${mimeType};base64,${base64}`;
+    // console.log(base64)
+    
   }
   return ""
 }
