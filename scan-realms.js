@@ -122,7 +122,7 @@ const mergeProfile = async (originalData, updatedData) => {
         if (image)
           originalData['collections'][collectionGroupKey]['image'] = await getImageDataFromUri(image, process.env.NETWORK)
         if (preview) {
-          const previewImgs = []
+          let previewImgs = []
           const previewKeys = Object.keys(preview)
           if (previewKeys) {
             originalData['collections'][collectionGroupKey]['previews'] = []
@@ -144,7 +144,21 @@ const mergeProfile = async (originalData, updatedData) => {
     }
   }
   if (wallets) {
-    // still have to add wallets
+    let walletArray = []
+    const walletKeys = Object.keys(wallets)
+    if (walletKeys && walletKeys.length > 0) {
+      for (let i = 0; i < walletKeys.length; i++) {
+        const walletKey = walletKeys[i];
+        const address = wallets[walletKey]
+        if (address) {
+          walletArray.push({
+            type: walletKey,
+            address
+          })
+        }
+      }
+    }
+    originalData['wallets'] = walletArray
   }
   return originalData
 }
