@@ -43,14 +43,23 @@ const getImageDataFromUri = async (uri, network) => {
     }
   }
   else if (uri.startsWith("atom:btc:dat")) {
-    request.get(`${process.env.CURRENT_URN_PROXY}/${uri}`, { encoding: null }, (error, response, body) => {
-      if (!error && response.statusCode == 200) {
-          let base64Image = `data:${response.headers['content-type']};base64,` + Buffer.from(body).toString('base64');
-          return base64Image
-      }
-    });
+    const base64Image = await doRequest(`${process.env.CURRENT_URN_PROXY}/${uri}`)
+    return base64Image
   }
   return ""
+}
+
+function doRequest(url) {
+  return new Promise(function (resolve, reject) {
+    request.get(url, { encoding: null }, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        let base64Image = `data:${response.headers['content-type']};base64,` + Buffer.from(body).toString('base64');
+        return resolve(base64Image)
+      }
+      else
+        return reject(error)
+    });
+  });
 }
 
 module.exports = getImageDataFromUri

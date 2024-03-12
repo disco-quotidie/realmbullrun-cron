@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async-request": "^1.2.0",
     "axios": "^1.6.7",
     "body-parse": "^0.1.0",
     "borc": "^3.0.0",
