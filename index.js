@@ -4,6 +4,8 @@ const http = require('http');
 const express = require('express');
 const cors = require('cors');
 
+const { BIP322, Signer, Verifier } = require('bip322-js')
+
 const app = express();
 
 app.use(cors());
@@ -43,6 +45,19 @@ app.get('/api/get-subrealm-info', async (req, res) => {
   }
 })
 
+const originalMessage = "I am whitelisted"
+
+app.get('/api/getJSON', async (req, res) => {
+  try {
+    const { address, signedMessage } = req.query
+    const result = Verifier.verifySignature(address, originalMessage, signedMessage)
+    return res.status(200).send(result)    
+  } catch (error) {
+    console.log(error)
+    return res.status(404).send("error")
+  }
+})
+
 const scanRealms = require('./scan-realms');
 
 const server = http.createServer(app);
@@ -51,8 +66,8 @@ global.subrealmList = []
 
 server.listen(process.env.PORT, () => {
   console.log(`+${process.env.TOP_LEVEL_REALM} Subrealm Indexer started :${process.env.PORT} on ${process.env.NETWORK}...`)
-  scanRealms()
-  setInterval(() => {
-    scanRealms()
-  }, 300000)
+  // scanRealms()
+  // setInterval(() => {
+  //   scanRealms()
+  // }, 300000)
 })

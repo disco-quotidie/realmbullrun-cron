@@ -13,13 +13,17 @@
   "dependencies": {
     "async-request": "^1.2.0",
     "axios": "^1.6.7",
+    "bip322-js": "^1.1.0",
+    "bitcoinjs-lib": "^6.1.5",
+    "bitcoinjs-message": "^2.2.0",
     "body-parse": "^0.1.0",
     "borc": "^3.0.0",
     "cookie-parse": "^0.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "tiny-secp256k1": "^2.2.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
