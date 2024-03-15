@@ -6,6 +6,9 @@ const cors = require('cors');
 
 const { BIP322, Signer, Verifier } = require('bip322-js')
 
+const fs = require('fs')
+const FILES_PATH = './items'
+
 const app = express();
 
 app.use(cors());
@@ -45,13 +48,38 @@ app.get('/api/get-subrealm-info', async (req, res) => {
   }
 })
 
-const originalMessage = "I am whitelisted"
+const originalMessage = "In order to prove you are the owner of this realm and whitelisted, you should sign this message. No sats are being charged, no transactions are broadcast."
 
 app.get('/api/getJSON', async (req, res) => {
   try {
-    const { address, signedMessage } = req.query
+    const { item, address, signedMessage } = req.query
+
     const result = Verifier.verifySignature(address, originalMessage, signedMessage)
-    return res.status(200).send(result)    
+
+    if (!result || result === "false" || result === "error") {
+      return res.status(200).send({
+        success: false,
+        msg: "not verified"
+      })
+    }
+
+    const filePath = `${FILES_PATH}/${item}.json`
+    if (!fs.existsSync(filePath))
+      return res.status(200).send({
+        success: false,
+        msg: "verified but file not found"
+      })
+    
+    
+    const file = fs.readFileSync(filePath)
+    const data = fs.createReadStream(filePath)
+    const disposition = `attachment; filename=${item}.json`
+
+    res.setHeader('Content-Type', 'file/unknown')
+    res.setHeader('Content-Length', file.length)
+    res.setHeader('Content-Disposition', disposition)
+
+    data.pipe(res)
   } catch (error) {
     console.log(error)
     return res.status(404).send("error")
@@ -66,8 +94,8 @@ global.subrealmList = []
 
 server.listen(process.env.PORT, () => {
   console.log(`+${process.env.TOP_LEVEL_REALM} Subrealm Indexer started :${process.env.PORT} on ${process.env.NETWORK}...`)
-  // scanRealms()
-  // setInterval(() => {
-  //   scanRealms()
-  // }, 300000)
+  scanRealms()
+  setInterval(() => {
+    scanRealms()
+  }, 300000)
 })
