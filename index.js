@@ -49,12 +49,13 @@ app.get('/api/get-subrealm-info', async (req, res) => {
 })
 
 const originalMessage = "In order to prove you are the owner of this realm and whitelisted, you should sign this message. No sats are being charged, no transactions are broadcast."
+const {checkAddressHasSubrealm} = require('./utils/check-address-has-subrealm')
 
 app.get('/api/getJSON', async (req, res) => {
   try {
     const { item, address, signedMessage } = req.query
 
-    const result = Verifier.verifySignature(address, originalMessage, signedMessage)
+    const result = await Verifier.verifySignature(address, originalMessage, signedMessage)
 
     if (!result || result === "false" || result === "error") {
       return res.status(200).send({
@@ -62,6 +63,14 @@ app.get('/api/getJSON', async (req, res) => {
         msg: "not verified"
       })
     }
+
+    // check if the address has that subrealm
+    const hasSubrealm = await checkAddressHasSubrealm(address, `${process.env.TOP_LEVEL_REALM}.${item}`, process.env.NETWORK)
+    if (!hasSubrealm)
+      return res.status(403).send({
+        success: false,
+        msg: "not authorized"
+      })
 
     const filePath = `${FILES_PATH}/${item}.json`
     if (!fs.existsSync(filePath))
@@ -94,8 +103,8 @@ global.subrealmList = []
 
 server.listen(process.env.PORT, () => {
   console.log(`+${process.env.TOP_LEVEL_REALM} Subrealm Indexer started :${process.env.PORT} on ${process.env.NETWORK}...`)
-  scanRealms()
-  setInterval(() => {
-    scanRealms()
-  }, 300000)
+  // scanRealms()
+  // setInterval(() => {
+  //   scanRealms()
+  // }, 300000)
 })
