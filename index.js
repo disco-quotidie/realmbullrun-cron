@@ -103,8 +103,8 @@ global.subrealmList = []
 
 server.listen(process.env.PORT, () => {
   console.log(`+${process.env.TOP_LEVEL_REALM} Subrealm Indexer started :${process.env.PORT} on ${process.env.NETWORK}...`)
-  // scanRealms()
-  // setInterval(() => {
-  //   scanRealms()
-  // }, 300000)
+  scanRealms()
+  setInterval(() => {
+    scanRealms()
+  }, 300000)
 })
