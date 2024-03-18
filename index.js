@@ -1,6 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 const http = require('http');
+const https = require('https');
 const express = require('express');
 const cors = require('cors');
 
@@ -10,6 +11,10 @@ const fs = require('fs')
 const FILES_PATH = './items'
 
 const app = express();
+
+var privateKey  = fs.readFileSync(`${__dirname}/sslcert/server.key`, 'utf8');
+var certificate = fs.readFileSync(`${__dirname}/sslcert/server.crt`, 'utf8');
+var credentials = {key: privateKey, cert: certificate};
 
 app.use(cors());
 app.options('*', cors());
@@ -49,11 +54,11 @@ app.get('/api/get-subrealm-info', async (req, res) => {
 })
 
 const originalMessage = "In order to prove you are the owner of this realm and whitelisted, you should sign this message. No sats are being charged, no transactions are broadcast."
-const {checkAddressHasSubrealm} = require('./utils/check-address-has-subrealm')
+const checkAddressHasSubrealm = require('./utils/check-address-has-subrealm')
 
 app.get('/api/getJSON', async (req, res) => {
   try {
-    const { item, address, signedMessage } = req.query
+    const { item, address, signature: signedMessage } = req.query
 
     const result = await Verifier.verifySignature(address, originalMessage, signedMessage)
 
@@ -79,7 +84,6 @@ app.get('/api/getJSON', async (req, res) => {
         msg: "verified but file not found"
       })
     
-    
     const file = fs.readFileSync(filePath)
     const data = fs.createReadStream(filePath)
     const disposition = `attachment; filename=${item}.json`
@@ -88,7 +92,7 @@ app.get('/api/getJSON', async (req, res) => {
     res.setHeader('Content-Length', file.length)
     res.setHeader('Content-Disposition', disposition)
 
-    data.pipe(res)
+    return data.pipe(res)
   } catch (error) {
     console.log(error)
     return res.status(404).send("error")
@@ -96,15 +100,18 @@ app.get('/api/getJSON', async (req, res) => {
 })
 
 const scanRealms = require('./scan-realms');
+const { sign } = require('crypto');
 
-const server = http.createServer(app);
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app)
 
 global.subrealmList = []
 
-server.listen(process.env.PORT, () => {
+httpServer.listen(process.env.PORT, () => {
   console.log(`+${process.env.TOP_LEVEL_REALM} Subrealm Indexer started :${process.env.PORT} on ${process.env.NETWORK}...`)
-  scanRealms()
-  setInterval(() => {
-    scanRealms()
-  }, 300000)
+  httpsServer.listen(8443, () => console.log('https listening'))
+  // scanRealms()
+  // setInterval(() => {
+  //   scanRealms()
+  // }, 300000)
 })
