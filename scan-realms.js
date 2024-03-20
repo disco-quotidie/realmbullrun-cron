@@ -1,5 +1,6 @@
 const axios = require('axios')
 const cbor = require('borc')
+const fs = require('fs')
 
 const getSubrealmsFromTLR = require('./utils/get-subrealms-from-tlr')
 const getStateHistoryFromAtomicalId = require('./utils/get-state-history-from-atomical-id')
@@ -52,6 +53,7 @@ const scanSubrealms = async () => {
 
   }
   global.subrealmList = newList
+  fs.writeFileSync("dummy.json", JSON.stringify(newList))
   console.log(`scanning finished at ${getDateStr()}`)
 }
 

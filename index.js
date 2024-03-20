@@ -53,6 +53,12 @@ app.get('/api/get-subrealm-info', async (req, res) => {
   }
 })
 
+const readFromDummy = () => {
+  fs.readFile("dummy.json", (err, data) => {
+    global.subrealmList = JSON.parse(data)
+  })
+}
+
 const originalMessage = "In order to prove you are the owner of this realm and whitelisted, you should sign this message. No sats are being charged, no transactions are broadcast."
 const checkAddressHasSubrealm = require('./utils/check-address-has-subrealm')
 
@@ -100,7 +106,6 @@ app.get('/api/getJSON', async (req, res) => {
 })
 
 const scanRealms = require('./scan-realms');
-const { sign } = require('crypto');
 
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app)
@@ -110,6 +115,8 @@ global.subrealmList = []
 httpServer.listen(process.env.PORT, () => {
   console.log(`+${process.env.TOP_LEVEL_REALM} Subrealm Indexer started :${process.env.PORT} on ${process.env.NETWORK}...`)
   httpsServer.listen(8443, () => console.log('https listening'))
+
+  readFromDummy()
   // scanRealms()
   // setInterval(() => {
   //   scanRealms()
