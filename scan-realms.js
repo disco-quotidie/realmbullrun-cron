@@ -21,14 +21,14 @@ const scanSubrealms = async () => {
       const { atomical_id, subrealm } = subrealms[i]
       if (!atomical_id)
         continue
-      const { $request_subrealm_status } = await getAtomicalInfoFromId(atomical_id, process.env.NETWORK)
+      const { $request_subrealm_status, atomical_number } = await getAtomicalInfoFromId(atomical_id, process.env.NETWORK)
       if (!$request_subrealm_status || $request_subrealm_status.status !== "verified")
         continue
       const stateHistory = await getStateHistoryFromAtomicalId(atomical_id, process.env.NETWORK)
       if (!stateHistory)
         continue
   
-      let profile = { atomical_id, subrealm }
+      let profile = { atomical_id, subrealm, atomical_number }
       for (let j = 0; j < stateHistory.length; j ++) {
         const { data } = stateHistory[j];
         if (!data)
