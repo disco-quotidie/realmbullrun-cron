@@ -17,7 +17,7 @@ const scanSubrealms = async () => {
   for (let i = 0; i < subrealms.length; i ++) {
 
     try {
-      await delay(100)
+      // await delay(100)
       const { atomical_id, subrealm } = subrealms[i]
       if (!atomical_id)
         continue

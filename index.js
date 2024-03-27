@@ -116,9 +116,9 @@ httpServer.listen(process.env.PORT, () => {
   console.log(`+${process.env.TOP_LEVEL_REALM} Subrealm Indexer started :${process.env.PORT} on ${process.env.NETWORK}...`)
   httpsServer.listen(8443, () => console.log('https listening'))
 
-  readFromDummy()
-  // scanRealms()
-  // setInterval(() => {
-  //   scanRealms()
-  // }, 300000)
+  // readFromDummy()
+  scanRealms()
+  setInterval(() => {
+    scanRealms()
+  }, 600000)
 })
